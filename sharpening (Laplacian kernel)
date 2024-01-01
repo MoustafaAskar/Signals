@@ -35,5 +35,5 @@ function fig = displayImageWithLaplacianSharpening()
     imshow(sharpenedImage);
     title('Sharpened Image (Laplacian Kernel)');
     %Saving the sharpened image
-    imwrite(sharpenedImage, 'sharpened_image.jpg');
+    imwrite(sharpenedImage, 'image2.png');
 end
