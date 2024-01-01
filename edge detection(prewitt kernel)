@@ -1,0 +1,67 @@
+% Function to load and display an image 
+function fig = displayImageWithPrewittCombined()
+    % choose an image file
+    [fileName, filePath] = uigetfile({'*.jpg;*.jpeg;*.png;*.bmp', 'Image Files (*.jpg, *.jpeg, *.png, *.bmp)'}, 'Select an Image');
+    
+    % Check if file selection canceled
+    if isequal(fileName, 0) || isequal(filePath, 0)
+        disp('User canceled the operation.');
+        fig = [];
+        return;
+    end
+    
+    % Read the selected image
+    image = imread(fullfile(filePath, fileName));
+    
+    % Prewitt kernel for horizontal edge detection
+    prewittKernelX = [-1 0 1; -1 0 1; -1 0 1];
+
+    % Prewitt kernel for Vertical edge detection
+    prewittKernelY = [-1 -1 -1; 0 0 0; 1 1 1];
+
+    % Performing convolution for horizontal and vertical edges on each color channel
+    edgesX_Red = conv2(double(image(:, :, 1)), prewittKernelX, 'same');
+    edgesY_Red = conv2(double(image(:, :, 1)), prewittKernelY, 'same');
+
+    edgesX_Green = conv2(double(image(:, :, 2)), prewittKernelX, 'same');
+    edgesY_Green = conv2(double(image(:, :, 2)), prewittKernelY, 'same');
+
+    edgesX_Blue = conv2(double(image(:, :, 3)), prewittKernelX, 'same');
+    edgesY_Blue = conv2(double(image(:, :, 3)), prewittKernelY, 'same');
+
+    % Combine the horizontal and vertical edges to get the magnitude for each color
+    % channel
+    edgeMagnitude_Red = sqrt(edgesX_Red.^2 + edgesY_Red.^2);
+    edgeMagnitude_Green = sqrt(edgesX_Green.^2 + edgesY_Green.^2);
+    edgeMagnitude_Blue = sqrt(edgesX_Blue.^2 + edgesY_Blue.^2);
+
+    % Combine the magnitudes from each channel to get result for whole
+    % original image
+    edgeMagnitude = sqrt(edgeMagnitude_Red.^2 + edgeMagnitude_Green.^2 + edgeMagnitude_Blue.^2);
+
+    % Displaying the results
+    fig = figure;
+
+    subplot(2, 2, 1);
+    imshow(image);
+    title('Original Image');
+
+    subplot(2, 2, 2);
+    imshow(edgeMagnitude_Red, []);
+    title('Prewitt Edge Magnitude (Red Channel)');
+
+    subplot(2, 2, 3);
+    imshow(edgeMagnitude_Green, []);
+    title('Prewitt Edge Magnitude (Green Channel)');
+
+    subplot(2, 2, 4);
+    imshow(edgeMagnitude_Blue, []);
+    title('Prewitt Edge Magnitude (Blue Channel)');
+
+    % Displaying the combined edge magnitude with the original image
+    figure;
+    imshowpair(image, edgeMagnitude, 'montage');
+    title('Original Image vs. Combined Prewitt Edge Magnitude');
+    %Saving the edge detected image
+    imwrite(uint8(edgeMagnitude), 'image1.png');
+end
