@@ -1,0 +1,39 @@
+%                                    "Task 2 Communication system (b,c)"
+% Reading the first audio file
+[first_audio, fs] = audioread('input1.wav');
+% Applying fast fourier transform as an alternative for discrete fourier transform
+% to the original signal to get it in frequency domain
+N = length(first_audio);
+first_audio_freq = fft(first_audio, N);
+% Applying the designed filter to the original audio 
+filter_first_audio = filter(Lpass,first_audio);
+% saving the filtered audio 
+audiowrite('filtered1.wav',filter_first_audio, fs);
+% Applying fast fourier transform as an alternative for discrete fourier transform
+% to the filtered signal to get it in frequency domain
+filter_first_audio_freq = fft(filter_first_audio, N);
+f_shifted = (-N/2:N/2-1) * fs / N;
+% Plot the original signal shifted at zero and the filtered signal
+figure;
+subplot(2,1,1);
+plot(f_shifted, fftshift(abs(first_audio_freq))/N);
+title('Audio 1 Signal Shifted at Zero');
+subplot(2,1,2);
+plot(f_shifted, fftshift(abs(filter_first_audio_freq))/N);
+title('Audio 1 Filtered Signal');
+
+% Repeating same steps for second audio 
+[second_audio, fs] = audioread('input2.wav');
+N = length(second_audio);
+second_audio_freq = fft(second_audio, N);
+filter_second_audio = filter(Lpass,second_audio);
+audiowrite('filtered2.wav',filter_second_audio, fs);
+filter_second_audio_freq = fft(filter_second_audio, N);
+f_shifted = (-N/2:N/2-1) * fs / N;
+figure;
+subplot(3,1,1);
+plot(f_shifted, fftshift(abs(second_audio_freq))/N);
+title('Audio 2 Signal Shifted at Zero');
+subplot(3,1,2);
+plot(f_shifted, fftshift(abs(filter_second_audio_freq))/N);
+title('Audio 2 Filtered Signal');
