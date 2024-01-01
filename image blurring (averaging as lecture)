@@ -1,0 +1,41 @@
+% Function to load and display an image
+function displayImageblurring()
+    % choose an image file
+     [fileName, filePath] = uigetfile({'*.jpg;*.jpeg;*.png;*.bmp', 'Image Files (*.jpg, *.jpeg, *.png, *.bmp)'}, 'Select an Image');
+    
+    % Check if file selection canceled
+    if isequal(fileName, 0) || isequal(filePath, 0)
+        disp('User canceled the operation.');
+        return;
+    end
+    
+    % Read the selected image
+    image = imread(fullfile(filePath, fileName));
+
+  % to ensure right range of input 
+    originalImage = im2double(image);
+
+    % Defining a blur kernel (Like discussed in lecture)
+    kernel = ones(6) / 36;  % Averaging kernel
+
+    % Performing convolution on each color channel
+    blurredRed = conv2(double(originalImage(:,:,1)), kernel, 'same');
+    blurredGreen = conv2(double(originalImage(:,:,2)), kernel, 'same');
+    blurredBlue = conv2(double(originalImage(:,:,3)), kernel, 'same');
+
+    % Combining the blurred color channels
+    blurredImage = cat(3, blurredRed, blurredGreen, blurredBlue);
+
+    % Displaying the original and blurred images
+    figure;
+    subplot(1, 2, 1);
+    imshow(originalImage);
+    title('Original Image');
+
+    subplot(1, 2, 2);
+    imshow(blurredImage);
+    title('Blurred Image');
+
+    % Saving the blurred image
+    imwrite(blurredImage, 'blurred_image.jpg');
+end
