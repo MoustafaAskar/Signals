@@ -1,0 +1,51 @@
+% Function to load and display an image
+function displayImage()
+    % Prompt the user to choose an image file
+    [fileName, filePath] = uigetfile({'*.jpg;*.png;*.bmp', ...
+        'Image Files (*.jpg, *.png, , *.jpeg, *.bmp)';'*.m;*.mlx;*.fig;*.mat;*.slx;*.mdl',...
+    'MATLAB Files (*.m,*.mlx,*.fig,*.mat,*.slx,*.mdl)'}, 'Select an Image');
+    
+    
+    % Check if the user canceled the file selection
+    if isequal(fileName, 0) || isequal(filePath, 0)
+        disp('User canceled the operation.');
+        return;
+    end
+    
+    % Read the selected image
+    image = imread(fullfile(filePath, fileName));
+   
+    imwrite(image, 'readed_image.jpg');
+
+    % Display the original image and RGB components
+
+    %start of task1 A
+    figure;
+    subplot(2,2,1);
+    imshow(image);
+    title('Original Image');
+    r=image;
+    b=image;
+    g=image;
+    %red
+    r(:,:,2:3)=0;
+    subplot(2,2,2);
+    imshow(r);
+    title('RED');
+    %blue
+    b(:,:,1:2)=0;
+    subplot(2,2,3);
+    imshow(b);
+    title('BLUE');
+    %green
+    g(:,:,1)=0;
+    g(:,:,3)=0;
+    subplot(2,2,4);
+    imshow(g);
+    title('Green');
+    %End of task1 A
+    imwrite(r, 'RED.jpg');
+    imwrite(g, 'GREEN.jpg');
+    imwrite(b, 'BLUE.jpg');
+    
+ 
