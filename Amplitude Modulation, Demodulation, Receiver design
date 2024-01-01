@@ -1,0 +1,138 @@
+%                                       "Task 2 Communication system (d,e)"
+
+% Reading the filtered audio files
+[filtered_audio1, fs] = audioread("filtered1.wav");
+[filtered_audio2, fs] = audioread("filtered2.wav");
+
+% Adjusting time division and making sure it's of same length as signal 
+dt = 1/fs;
+t = 0:dt:(length(filtered_audio1)-1)*dt;
+
+% Carrier frequencies (Must be less than double sampling frequency and more
+% than double the maximum frequency 
+fc_filtered_audio_1 = 5000;
+fc_filtered_audio_2 = 10000;
+
+% Transpose signals (Applying Transpose on filtered audio to make it suitable
+% for multiplication with carrier signal)
+filtered_audio1_transpose = filtered_audio1.';  
+filtered_audio2_transpose = filtered_audio2.';
+
+% Performing Amplitude modulation on siganls by multiplication with a
+% carrier in time domain. (we chose sinusoidal carrier cosine)
+signal_1_modulated = filtered_audio1_transpose .* cos(2*pi*fc_filtered_audio_1*t); 
+signal_2_modulated = filtered_audio2_transpose .* cos(2*pi*fc_filtered_audio_2*t);
+
+% Performing Demodulation by multiplication with carrier siganl again
+demod_signal_1_mod = signal_1_modulated .* cos(2*pi*fc_filtered_audio_1*t);
+demod_signal_2_mod = signal_2_modulated .* cos(2*pi*fc_filtered_audio_2*t);
+
+% Applying the designed low-pass filter to the demodulated signals
+restored_signal_1 = 2*filter(Lpass, demod_signal_1_mod);
+restored_signal_2 = 2*filter(Lpass, demod_signal_2_mod);
+
+% Plot the frequency spectrum of the original, modulated, and restored signals
+% shifted at zero 
+input1_spectrum_x = fftshift(fft(filtered_audio1)) / fs;
+input2_spectrum_w = fftshift(fft(filtered_audio2)) / fs;
+
+modulated_spectrum_1 = fftshift(fft(signal_1_modulated)) / fs;
+modulated_spectrum_2 = fftshift(fft(signal_2_modulated)) / fs;
+
+demodulated_spectrum_1 = fftshift(fft(demod_signal_1_mod)) / fs;
+demodulated_spectrum_2 = fftshift(fft(demod_signal_2_mod)) / fs;
+
+restored_spectrum_1 = fftshift(fft(restored_signal_1)) / fs;
+restored_spectrum_2 = fftshift(fft(restored_signal_2)) / fs;
+
+frequencies = -fs/2:fs/length(filtered_audio1):fs/2-fs/length(filtered_audio1);
+
+% Saving the output of the system
+audiowrite('output1.wav',restored_signal_1,fs)
+audiowrite('output2.wav',restored_signal_2,fs)
+
+% Plot frequency spectra
+figure(1);
+subplot(3,1,1)
+plot(frequencies, abs(input1_spectrum_x));
+title('Frequency Spectrum of Original Signal 1');
+xlabel('Frequency (Hz)');
+ylabel('Magnitude');
+grid on
+
+subplot(3,1,2)
+plot(frequencies, abs(input2_spectrum_w));
+title('Frequency Spectrum of Original Signal 2');
+xlabel('Frequency (Hz)');
+ylabel('Magnitude');
+grid on
+
+subplot(3,1,3)
+plot(frequencies, abs(input1_spectrum_x), 'b');
+hold on;
+plot(frequencies, abs(input2_spectrum_w), 'g');
+hold off;
+title('Frequency Spectrum of Original Signals');
+xlabel('Frequency (Hz)');
+ylabel('Magnitude');
+legend('Input 1', 'Input 2');
+grid on
+
+% Plot frequency spectra of modulated signals
+figure(2);
+subplot(3,1,1)
+plot(frequencies, abs(modulated_spectrum_1),'b');
+title('Frequency Spectrum of Modulated Signal 1');
+xlabel('Frequency (Hz)');
+ylabel('Magnitude');
+grid on
+subplot(3,1,2)
+plot(frequencies, abs(modulated_spectrum_2),'G');
+title('Frequency Spectrum of Modulated Signal 2');
+xlabel('Frequency (Hz)');
+ylabel('Magnitude');
+grid on
+subplot(3,1,3)
+plot(frequencies, abs(modulated_spectrum_1), 'b');
+hold on;
+plot(frequencies, abs(modulated_spectrum_2), 'g');
+hold off;
+title('Frequency Spectrum of Original Signals');
+xlabel('Frequency (Hz)');
+ylabel('Magnitude');
+legend('Input 1', 'Input 2');
+grid on
+
+
+
+% Plot frequency spectra of demodulated signals
+figure(3);
+subplot(2,1,1)
+plot(frequencies, abs(demodulated_spectrum_1));
+title('Frequency Spectrum of Demodulated Signal 1');
+xlabel('Frequency (Hz)');
+ylabel('Magnitude');
+grid on
+
+subplot(2,1,2)
+plot(frequencies, abs(demodulated_spectrum_2),'G');
+title('Frequency Spectrum of Demodulated Signal 2');
+xlabel('Frequency (Hz)');
+ylabel('Magnitude');
+grid on
+
+% Plot frequency spectra of restored signals
+figure(4);
+subplot(2,1,1)
+plot(frequencies, abs(restored_spectrum_1));
+title('Frequency Spectrum of Restored Signal 1');
+xlabel('Frequency (Hz)');
+ylabel('Magnitude');
+grid on
+
+subplot(2,1,2)
+plot(frequencies, abs(restored_spectrum_2),'G');
+title('Frequency Spectrum of Restored Signal 2');
+xlabel('Frequency (Hz)');
+ylabel('Magnitude');
+grid on
