@@ -1,0 +1,50 @@
+%                                         "Task 2 Communication system (a)"
+
+% Audio Recording
+% Sampling frequency = 44100 (testing many values it gave good quality same
+% as the number used for CD 
+% Bit depth(bits per sample) = 16 bits
+recorder = audiorecorder(44100, 16, 1);
+% First Audio
+disp('Speak to record audio 1.')
+recordblocking(recorder, 10);
+disp('End of recording');
+% Save first audio
+First_audio = getaudiodata(recorder);
+audiowrite('input1.wav', First_audio, 44100);
+% Plot the first audio 
+subplot(2, 2, 1);
+plot(First_audio);
+title('Audio 1 - Time Domain');
+%In Frequency domain
+subplot(2, 2, 2);
+plotFrequencySpectrum(First_audio, 44100);
+title('Audio 1 - Frequency Spectrum');
+% Repeating same steps for second audio
+recorder = audiorecorder(44100, 16, 1);
+disp('Speak to record audio 2.')
+recordblocking(recorder, 10);
+disp('End of recording.');
+% Save second audio
+Second_Audio = getaudiodata(recorder);
+audiowrite('input2.wav', Second_Audio, 44100);
+% Plot the second segment and its frequency spectrum
+subplot(2, 2, 3);
+plot(Second_Audio);
+title('Audio 2 - Time Domain');
+subplot(2, 2, 4);
+plotFrequencySpectrum(y2, 44100);
+title('Audio 2 - Frequency Spectrum');
+% Save both segments
+save('audio_segments.mat', 'First_audio', 'y2');
+% shifting to be centred at zero 
+function plotFrequencySpectrum(signal, fs)
+    N = length(signal);
+    spectrum = fft(signal);
+    f = (-N/2:N/2-1) * fs / N;
+    magnitude = abs(fftshift(spectrum)); 
+    % Plot the centered frequency spectrum
+    plot(f, magnitude);
+    xlabel('Frequency (Hz)');
+    ylabel('Magnitude');
+end
