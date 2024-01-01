@@ -1,0 +1,39 @@
+% Function to load and display an image 
+function fig = displayImageWithLaplacianSharpening()
+    % choose an image file
+    [fileName, filePath] = uigetfile({'*.jpg;*.jpeg;*.png;*.bmp', 'Image Files (*.jpg, *.jpeg, *.png, *.bmp)'}, 'Select an Image');
+    
+    % Check if file selection canceled
+    if isequal(fileName, 0) || isequal(filePath, 0)
+        disp('User canceled the operation.');
+        fig = [];
+        return;
+    end
+    
+    % Read the selected image
+    originalImage = imread(fullfile(filePath, fileName));
+    
+    % Laplacian kernel for sharpening
+    laplacianKernel = [0 -1 0; -1 4 -1; 0 -1 0];
+
+    %convolution with Laplacian kernel for each color channel
+    sharpenedRed = conv2(double(originalImage(:,:,1)), laplacianKernel, 'same');
+    sharpenedGreen = conv2(double(originalImage(:,:,2)), laplacianKernel, 'same');
+    sharpenedBlue = conv2(double(originalImage(:,:,3)), laplacianKernel, 'same');
+    
+    % Combining the results for each channel
+    sharpenedImage = originalImage + cat(3, uint8(sharpenedRed), uint8(sharpenedGreen), uint8(sharpenedBlue));
+    
+    % Displaying the results
+    fig = figure;
+
+    subplot(1, 2, 1);
+    imshow(originalImage);
+    title('Original Image');
+
+    subplot(1, 2, 2);
+    imshow(sharpenedImage);
+    title('Sharpened Image (Laplacian Kernel)');
+    %Saving the sharpened image
+    imwrite(sharpenedImage, 'sharpened_image.jpg');
+end
