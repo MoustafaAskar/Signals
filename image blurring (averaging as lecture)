@@ -37,5 +37,5 @@ function displayImageblurring()
     title('Blurred Image');
 
     % Saving the blurred image
-    imwrite(blurredImage, 'blurred_image.jpg');
+    imwrite(blurredImage, 'image3.png');
 end
